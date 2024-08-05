@@ -185,4 +185,21 @@ for district in district_size:
   measured in kelvin can be converted to degrees Celsius (°C) by subtracting 
   273.15.
   '''          
-   
+
+#making district-wise temperature data for agri-survey 201807 to 201812, do mean, max, min and std
+#temperature in Kelvin, convert to Celsius
+
+erapath="G://SME/paper_2/IndiaDrought/era5temp/district_era5/"
+erafiles=os.listdir(erapath)
+outdf=pd.DataFrame()
+for file in erafiles:
+    inera = pd.read_csv(erapath+file)
+    speicode=int(file.split('_')[0])
+    inera['datum']=(inera['date']//100).astype(int)
+    inera=inera[(inera['datum']>=201807)&(inera['datum']<=201812)]
+    outdf.loc[speicode,'mean_t2m']=inera['t2m'].mean()
+    outdf.loc[speicode,'min_t2m']=inera['t2m'].min()
+    outdf.loc[speicode,'max_t2m']=inera['t2m'].max()
+    outdf.loc[speicode,'std_t2m']=inera['t2m'].std()
+outdf=outdf.reset_index().rename(columns={'index':'spei_district_code'})
+outdf.to_csv('G://SME/paper_2/IndiaDrought/speidata/sitagri2019_t2m.csv',index=False)
